@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'modul_lain.dart';
 void main() {
   print ('Halo, Dart!');
   print('--------------');
@@ -9,6 +10,10 @@ void main() {
   fungsiPercobaan3();
   fungsiPercobaan4(80);
   fungsiPercobaan5('Ericha', 5);
+  fungsiPercobaan6();
+  fungsiPercobaanList();
+  fungsiPercobaanMap();
+  fungsiPercobaanSet();
 }
 
 void fungsiPercobaan1() {
