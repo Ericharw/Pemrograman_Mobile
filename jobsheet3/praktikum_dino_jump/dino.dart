@@ -5,11 +5,11 @@ class Dino extends GameObject {
     print('Dino is jumping!');
   }
   @override
-  void render() {
-    print('Rendering Dino at position ($x, $y)');
-  }
-  @override
   void update() {
     print('Updating Dino position...');
+  }
+  @override
+  void render() {
+    print('Rendering Dino at position ($x, $y)');
   }
 }

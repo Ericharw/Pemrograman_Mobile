@@ -1,19 +1,27 @@
 import 'dino.dart';
 import 'cactus.dart';
+import 'bird.dart';
 import 'game_object.dart';
-// Main function to simulate game
+
 void main() {
-  // Create game objects
   var dino = Dino(0, 0);
   var cactus = Cactus(10, 0);
-  // Simulate game loop
-  List<GameObject> GameObjects = [dino, cactus];
-  for (var obj in GameObjects) {
+  var bird = Bird(15, 5);
+
+  // Kumpulkan semua objek game ke dalam list
+  List<GameObject> gameObjects = [dino, cactus, bird];
+
+  // Update semua objek
+  for (var obj in gameObjects) {
     obj.update();
   }
-  for (var obj in GameObjects) {
+
+  // Render semua objek
+  for (var obj in gameObjects) {
     obj.render();
   }
-  // Trigger specific behavior
+
+  // Trigger aksi spesifik
   dino.jump();
+  bird.fly();
 }
