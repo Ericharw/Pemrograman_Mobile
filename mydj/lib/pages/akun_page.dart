@@ -1,7 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mydj/componens/password_field.dart';
 
 class AkunPage extends StatefulWidget {
   const AkunPage({super.key, required this.title});
+
   final String title;
 
   @override
@@ -9,99 +13,179 @@ class AkunPage extends StatefulWidget {
 }
 
 class _AkunPageState extends State<AkunPage> {
+  // Controller untuk setiap field password
+  final TextEditingController _currentPasswordController =
+  TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+  TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
+  // 🔹 Fungsi menyimpan password
+  void _savePassword() {
+    if (_formKey.currentState!.validate()) {
+      if (_newPasswordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sandi baru dan konfirmasi tidak cocok!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Proses penyimpanan bisa diganti sesuai kebutuhan
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sandi berhasil diubah!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Kosongkan field
+      _currentPasswordController.clear();
+      _newPasswordController.clear();
+      _confirmPasswordController.clear();
+    }
+  }
+
+  // 🔹 Fungsi keluar dari aplikasi
+  void _exitApp() {
+    // Tutup aplikasi secara langsung
+    if (Platform.isAndroid) {
+      SystemNavigator.pop(); // Untuk Android
+    } else if (Platform.isIOS) {
+      exit(0); // Untuk iOS (tidak disarankan, tapi berfungsi untuk simulasi)
+    }
+  }
+
+  @override
+  void dispose() {
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
-        centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Foto profil
-            const CircleAvatar(
-              radius: 60,
-              backgroundImage: AssetImage('assets/images/profile.jpg'),
-            ),
-            const SizedBox(height: 20),
-
-            // Nama pengguna
-            const Text(
-              'Ericha Rizki Wardani',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 5),
-            const Text(
-              'Mahasiswa Teknik Informatika',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Informasi akun
-            Card(
-              margin: const EdgeInsets.symmetric(horizontal: 40),
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    ListTile(
-                      leading: Icon(Icons.email, color: Colors.blueAccent),
-                      title: Text('Email'),
-                      subtitle: Text('ericharizki12@gmail.com.com'),
-                    ),
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.phone, color: Colors.green),
-                      title: Text('Nomor Telepon'),
-                      subtitle: Text('+62 857-6599-1971'),
-                    ),
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.location_on, color: Colors.redAccent),
-                      title: Text('Alamat'),
-                      subtitle: Text('Polinema, Malang'),
-                    ),
-                  ],
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Ganti Sandi',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ),
+                const Divider(thickness: 2),
+                const SizedBox(height: 20),
 
-            const SizedBox(height: 30),
+                // Sandi saat ini
+                const Text('Sandi saat ini'),
+                const SizedBox(height: 10),
+                PasswordField(
+                  controller: _currentPasswordController,
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Masukkan sandi saat ini' : null,
+                ),
 
-            // Tombol keluar atau edit profil
-            ElevatedButton.icon(
-              onPressed: () {
-                // Nanti bisa diarahkan ke halaman login atau edit profil
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Fitur ini belum tersedia')),
-                );
-              },
-              icon: const Icon(Icons.logout),
-              label: const Text('Keluar'),
-              style: ElevatedButton.styleFrom(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                backgroundColor: Colors.redAccent,
-              ),
+                const SizedBox(height: 20),
+
+                // Sandi baru
+                const Text('Sandi baru'),
+                const SizedBox(height: 10),
+                PasswordField(
+                  controller: _newPasswordController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Masukkan sandi baru';
+                    }
+                    if (value.length < 6) {
+                      return 'Sandi minimal 6 karakter';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 20),
+
+                // Konfirmasi sandi baru
+                const Text('Konfirmasi Sandi Baru'),
+                const SizedBox(height: 10),
+                PasswordField(
+                  controller: _confirmPasswordController,
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Masukkan konfirmasi sandi baru' : null,
+                ),
+
+                const SizedBox(height: 30),
+
+                // Tombol Simpan
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _savePassword,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.lightBlueAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    child: const Text(
+                      'Simpan',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // Section Keluar
+                const Text(
+                  'Keluar',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Divider(thickness: 1),
+                const SizedBox(height: 20),
+
+                // Tombol Keluar dari Aplikasi
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _exitApp,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.lightBlueAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    child: const Text(
+                      'Keluar dari Aplikasi',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

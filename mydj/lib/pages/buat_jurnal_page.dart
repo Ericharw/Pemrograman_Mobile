@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mydj/componens/media_selector.dart';
 import 'package:mydj/data/data_provider.dart';
 import 'package:mydj/data/jurnal.dart';
 import 'package:provider/provider.dart';
+
 
 class BuatJurnalPage extends StatefulWidget {
   const BuatJurnalPage({super.key, required this.title});
@@ -153,6 +155,15 @@ class _BuatJurnalPageState extends State<BuatJurnalPage> {
                 'Uraikan profil pelajar',
                     (value) => setState(() => profilPelajarPancasila = value),
               ),
+              const SizedBox(height: 20),
+
+              // 🟩 Tambahkan di sini:
+              const Text('Dokumentasi Pembelajaran:'),
+              const SizedBox(height: 10),
+              MediaSelector(mediaType: MediaType.photo),
+              const SizedBox(height: 10),
+              MediaSelector(mediaType: MediaType.video),
+
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
